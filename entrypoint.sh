@@ -2,13 +2,15 @@
 
 service postgresql start
 su -l postgres -c "createdb calamari"
-calamari-ctl initialize --admin-username admin --admin-password admin --admin-email admin@ceph.example.com
+calamari-ctl initialize --admin-username ${username:='admin'} \
+ 			--admin-password ${password:='admin'} \
+			--admin-email ${email:='admin@example.com'}
 
-service diamond restart 
+echo "ServerName ${servername:='localhost'}" >> /etc/apache2/apache2.conf
 service apache2 restart
-service supervisor restart
+service supervisor start
 
 chmod 777 /var/log/calamari/cthulhu.log
 chmod 777 /var/log/calamari/calamari.log
 
-less +F /var/log/calamari/calamari.log 
+tail -f /var/log/calamari/calamari.log 
